@@ -4,6 +4,7 @@ import IconsButton from '../components/ui/IconsButton'
 import { GlobalStyles } from '../constants/style'
 import Button from '../components/ui/Button'
 import { ExpenseContext } from '../store/expense-context'
+import ExpenseForm from '../components/ManageExpense/ExpenseForm'
 
 const ManageExpense = ({ route, navigation }) => {
   const expenseCtx = useContext(ExpenseContext)
@@ -21,7 +22,12 @@ const ManageExpense = ({ route, navigation }) => {
   const cancelExpenseHandler = () => {
     navigation.goBack()
   }
-  const confirmHandler = () => {
+  const confirmHandler = (expenseData) => {
+    if (isEditing) {
+      expenseCtx.updateExpense(expenseId, expenseData)
+    } else {
+      expenseCtx.addExpense(expenseData)
+    }
     navigation.goBack()
   }
   let content = null
@@ -40,7 +46,12 @@ const ManageExpense = ({ route, navigation }) => {
   }
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
+      <ExpenseForm
+        submitButtonLabel={isEditing ? 'Update' : 'Add'}
+        onCancel={cancelExpenseHandler}
+        onSubmit={confirmHandler}
+      />
+      {/* <View style={styles.buttonContainer}>
         <Button
           style={styles.button}
           mode='flat'
@@ -51,7 +62,7 @@ const ManageExpense = ({ route, navigation }) => {
         <Button style={styles.button} onPress={confirmHandler}>
           {isEditing ? 'Update' : 'Add'}
         </Button>
-      </View>
+      </View> */}
       {content}
     </View>
   )
@@ -71,14 +82,5 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderTopColor: GlobalStyles.colors.primary200,
     alignItems: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    minWidth: 120,
-    marginHorizontal: 8,
   },
 })
